@@ -207,7 +207,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   self.topView.layer.shouldRasterize = YES;
   
   if(![self topViewHasFocus]){
-  [self removeTopViewSnapshot];
+    [self removeTopViewSnapshot];
   }
   
   [self adjustLayout];
