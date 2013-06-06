@@ -19,6 +19,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
 
 @interface ECSlidingViewController()
 
+@property (nonatomic, strong) UIView *underView;
 @property (nonatomic, strong) UIView *topViewSnapshot;
 @property (nonatomic, assign) CGFloat initialTouchPositionX;
 @property (nonatomic, assign) CGFloat initialHoizontalCenter;
@@ -129,6 +130,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
     [self.underLeftViewController didMoveToParentViewController:self];
     
     [self updateUnderLeftLayout];
+    [self.underView addSubview:self.underLeftView];
   }
 }
 
@@ -145,6 +147,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
     [self.underRightViewController didMoveToParentViewController:self];
     
     [self updateUnderRightLayout];
+    [self.underView addSubview:self.underRightView];
   }
 }
 
@@ -184,6 +187,10 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   self.topViewSnapshot = [[UIView alloc] initWithFrame:self.topView.bounds];
   [self.topViewSnapshot setAutoresizingMask:self.autoResizeToFillScreen];
   [self.topViewSnapshot addGestureRecognizer:self.resetTapGesture];
+  self.underView = [[UIView alloc]initWithFrame:self.view.bounds];
+  [self.underView setAutoresizesSubviews:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+  self.underView.backgroundColor = [UIColor clearColor];
+  [self.view addSubview:self.underView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -200,7 +207,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   self.topView.layer.shouldRasterize = YES;
   
   if(![self topViewHasFocus]){
-    [self removeTopViewSnapshot];
+  [self removeTopViewSnapshot];
   }
   
   [self adjustLayout];
@@ -503,9 +510,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   dispatch_async(dispatch_get_main_queue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:ECSlidingViewUnderLeftWillAppear object:self userInfo:nil];
   });
-  [self.underRightView removeFromSuperview];
   [self updateUnderLeftLayout];
-  [self.view insertSubview:self.underLeftView belowSubview:self.topView];
+  if (!self.underLeftView.superview) {
+    [self.underView addSubview:self.underLeftView];
+  }
+  [self.underView bringSubviewToFront:self.underLeftView];
   _underLeftShowing  = YES;
   _underRightShowing = NO;
 }
@@ -515,9 +524,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   dispatch_async(dispatch_get_main_queue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:ECSlidingViewUnderRightWillAppear object:self userInfo:nil];
   });
-  [self.underLeftView removeFromSuperview];
   [self updateUnderRightLayout];
-  [self.view insertSubview:self.underRightView belowSubview:self.topView];
+  if (!self.underRightView.superview) {
+    [self.underView addSubview:self.underRightView];
+  }
+  [self.underView bringSubviewToFront:self.underRightView];
   _underLeftShowing  = NO;
   _underRightShowing = YES;
 }
@@ -530,8 +541,6 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   [self.topView removeGestureRecognizer:self.resetTapGesture];
   [self removeTopViewSnapshot];
   self.panGesture.enabled = YES;
-  [self.underRightView removeFromSuperview];
-  [self.underLeftView removeFromSuperview];
   _underLeftShowing   = NO;
   _underRightShowing  = NO;
   _topViewIsOffScreen = NO;
