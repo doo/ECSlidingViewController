@@ -384,6 +384,7 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
     if (animations) {
       animations();
     }
+    self.topView.layer.transform = CATransform3DIdentity;
     [self updateTopViewHorizontalCenter:self.resettedCenter];
   } completion:^(BOOL finished) {
     if (complete) {
@@ -423,6 +424,13 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   CGPoint center = self.topView.center;
   center.x = newHorizontalCenter;
   self.topView.layer.position = center;
+  
+  CGFloat anchor = (newHorizontalCenter > self.view.frame.size.width/2)?
+  self.anchorRightTopViewCenter:self.anchorLeftTopViewCenter;
+  
+  CGFloat progress = ABS(newHorizontalCenter - self.view.frame.size.width/2) / (anchor - self.view.frame.size.width/2);
+  CGFloat scale = 0.2 * (1 - progress) + 0.8;
+  self.topView.layer.transform = CATransform3DMakeScale(scale, scale, 1.0f);
 }
 
 - (void)topViewHorizontalCenterWillChange:(CGFloat)newHorizontalCenter
