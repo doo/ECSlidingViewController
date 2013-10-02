@@ -17,6 +17,9 @@ NSString *const ECSlidingViewTopDidAnchorRight       = @"ECSlidingViewTopDidAnch
 NSString *const ECSlidingViewTopWillReset            = @"ECSlidingViewTopWillReset";
 NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidReset";
 
+static const CGFloat kPanAnimationTime = 0.17f;
+static const CGFloat kTapAnimationTime = 0.21f;
+
 @interface ECSlidingViewController()
 
 @property (nonatomic, strong) UIView *underView;
@@ -309,8 +312,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   }
   
   [self topViewHorizontalCenterWillChange:newCenter];
-  
-  [UIView animateWithDuration:0.25f animations:^{
+  BOOL isPan = [self.panGesture velocityInView:self.view].x != 0;
+  [UIView animateWithDuration:isPan?kPanAnimationTime:kTapAnimationTime
+                        delay:0
+                      options:isPan?UIViewAnimationOptionCurveEaseOut:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
     if (animations) {
       animations();
     }
@@ -350,7 +356,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
   
   [self topViewHorizontalCenterWillChange:newCenter];
   
-  [UIView animateWithDuration:0.25f animations:^{
+  BOOL isPan = [self.panGesture velocityInView:self.view].x != 0;
+  [UIView animateWithDuration:isPan?kPanAnimationTime:kTapAnimationTime
+                        delay:0
+                      options:isPan?UIViewAnimationOptionCurveEaseOut:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
     if (animations) {
       animations();
     }
@@ -379,8 +389,11 @@ NSString *const ECSlidingViewTopDidReset             = @"ECSlidingViewTopDidRese
 - (void)resetTopViewWithAnimations:(void(^)())animations onComplete:(void(^)())complete
 {
   [self topViewHorizontalCenterWillChange:self.resettedCenter];
-  
-  [UIView animateWithDuration:0.25f animations:^{
+  BOOL isPan = [self.panGesture velocityInView:self.view].x != 0;
+  [UIView animateWithDuration:isPan?kPanAnimationTime:kTapAnimationTime
+                        delay:0
+                      options:isPan?UIViewAnimationOptionCurveEaseOut:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
     if (animations) {
       animations();
     }
